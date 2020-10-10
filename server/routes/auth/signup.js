@@ -17,18 +17,18 @@ router.post("/", async (req, res, next) => {
 
   try{
     const validatedUserinfo = await signupSchema.validateAsync(user)
-    
     const isUserAlreadyExists = await Users.findOne({email:validatedUserinfo.email})
     if(!isUserAlreadyExists){
       const newUser = await Users.insert(validatedUserinfo)
       const salt = await bcrypt.genSalt(process.env.SALT)
       const hashedPassword = await bcrypt.hash(newUser.password,salt)
-      return res.status(200).send({...newUser, password : hashedPassword})
+     newUser = {...newUser, password: hashedPassword}
+     
+     await Users.insert(newUser)
+     
 
     }
-
     res.status(400).send("Email already exists.")
-
   }catch(err){
       res.status(400).send({error:err})
   }
@@ -36,14 +36,7 @@ router.post("/", async (req, res, next) => {
 
 });
 
-router.get("/users",(req,res,next)=>{
-  try{
-    Users.find().then(users=>res.send(users)).catch(err=>res.send({error:err}))
 
-  }catch(err){
-    return res.status(400).send(err)
-  }
-})
 
 
 module.exports = router;
