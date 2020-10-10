@@ -1,0 +1,21 @@
+{
+  "name": "postboard-server",
+  "version": "1.0.0",
+  "description": "This server is for my postboard project and will contain posts to show, edit and delete",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon index.js"
+  },
+  "author": "Avinoam Ruach",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "helmet": "^4.1.1",
+    "joi": "^17.2.1",
+    "monk": "^7.3.2",
+    "volleyball": "^1.5.1"
+  }
+}
