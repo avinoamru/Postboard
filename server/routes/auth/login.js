@@ -12,33 +12,41 @@ const loginSchema = joi.object({
     allowUnicode: false
   }).required(),
   password: joi.string().min(8).required()
-})
+});
+
+const jwt = require('jsonwebtoken');
+
+const genToken = (user)=>{
+  const token = jwt.sign({_id: user._id.toString()},"avinoamruach",{expiresIn:"5 minutes"})
+  return token
+}
 
 
 
+router.post("/", async (req, res, next) => {
 
-router.post("/", (req, res, next) => {
-
-  const user = {
+  const requestedUser = {
     email,
     password
   } = req.body;
-console.log(user.email)
+  const isValidRequest = await loginSchema.validateAsync(requestedUser)
+  if (!isValidRequest)return res.send("Invalid email/password")
 
-  loginSchema.validateAsync(user).then(()=>{
-    Users.findOne(user.email).then(userFound=>{
-      if(!userFound)return res.status(300).send("Invalid email/password")
-      Users.findOneAndUpdate(user,{...user,token:Math.round.toString()})
-      
-    })
-  }).catch(err=>res.send({
-    error: err
-  }))
-
- 
+  const user = await Users.findOne({email: requestedUser.email})
+  const matchedPass = await bcrypt.compare(requestedUser.password,user.password)
+  console.log(user.password, " ",requestedUser.password)
+  if (!matchedPass || !user) return res.send("Wrong email/password")
+  
+  const token = genToken(user)
+  res.send({user,token})
 
 
-})
+
+
+
+
+
+});
 
 
 
